@@ -3,6 +3,9 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
+// Routes
+require('./routes/apiRoutes')(app);
+
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));
 
