@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 
 //Styles
 import "../sass/main.scss";
@@ -6,27 +7,6 @@ import {
   Input,
   Table 
 } from 'antd';
-
-const dataSource = [
-  {
-    key: '1',
-    name: 'Aachen',
-    id: 1,
-    classification: 'L5',
-    mass: 21,
-    nameType: 'Valid',
-    fall: 'Fell',
-    year: '1880',
-    lat: 	'50.775000',
-    lon: '6.083330'
-  },
-  {
-    key: '2',
-    name: 'John',
-    age: 42,
-    address: '10 Downing Street',
-  },
-];
 
 const columns = [
   {
@@ -41,8 +21,8 @@ const columns = [
   },
   {
     title: 'Classification',
-    dataIndex: 'classification',
-    key: 'classification',
+    dataIndex: 'recclass',
+    key: 'recclass',
   },
   {
     title: 'Mass (g)',
@@ -51,8 +31,8 @@ const columns = [
   },
   {
     title: 'Type',
-    dataIndex: 'nameType',
-    key: 'nameType'
+    dataIndex: 'nametype',
+    key: 'nametype'
   },
   {
     title: 'Fall',
@@ -66,19 +46,33 @@ const columns = [
   },
   {
     title: 'Latitute',
-    dataIndex: 'lat',
-    key: 'lat'
+    dataIndex: 'reclat',
+    key: 'reclat'
   },
   {
     title: 'Longtitude',
-    dataIndex: 'lon',
-    key: 'long'
+    dataIndex: 'reclong',
+    key: 'reclong'
   }
 ];
 
+
+
 const Search = Input.Search;
 
-function App() {
+const App = () => {
+  const [data, getData] = useState(() => {
+    const fetchData = async () => {
+      const response = await axios
+      .get('https://data.nasa.gov/resource/gh4g-9sfh.json?$limit=10')
+      .then(res => res.data);
+      getData(response);
+    }
+    fetchData();
+  });
+  console.log(data);
+
+
   return (
     <div className="App">
       <div className='header'>
@@ -88,9 +82,10 @@ function App() {
         placeholder="input search text"
         enterButton="Search"
         size="large"
+        className ="search"
         onSearch={value => console.log(value)}
       />
-      <Table dataSource={dataSource} columns={columns} />;
+      <Table dataSource={data} columns={columns} />;
     </div>
   );
 }
