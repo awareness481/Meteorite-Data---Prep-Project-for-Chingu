@@ -6,7 +6,8 @@ import _ from 'lodash';
 import "../sass/main.scss";
 import { 
   Input,
-  Table 
+  Table,
+  message
 } from 'antd';
 
 const columns = [
@@ -57,7 +58,10 @@ const columns = [
   }
 ];
 
-
+const error = () => {
+  console.log('error')
+  message.error('Please use alphanumeric characters');
+};
 
 
 const Search = Input.Search;
@@ -83,20 +87,21 @@ const App = () => {
 
   useEffect(() => {
       if (!validateQuery()) return;
-      fetchData(`$where=name like '%25${query}%25'`);
+      const a = query.toUpperCase();
+      fetchData(`$where=upper(name) like'%25${a}%25'`);
   });
+
 
   
 
   const validateQuery = () => {
     const re = /^[\w\ ]+$/gi;
-    if (re.test(query) && query.length > 0) return true;
-
-    if (!query || query.length === 0) {
+    if (query === "") {
+      fetchData('$limit=50000');
       return false;
     }
-    
-    
+
+    if (re.test(query) && query.length > 0) return true;
   }
 
   return (
@@ -109,10 +114,16 @@ const App = () => {
           placeholder="input search text"
           enterButton="Search"
           size="large"
-          onSearch={value => setQuery(value)}
+          onSearch={(value) => {
+            if (query !== "" && !/^[\w\ ]+$/gi.test(query)) {
+              error();
+            }
+            setQuery(value);
+            }
+          }
         />
       </div>
-      <Table dataSource={data} columns={columns}/>;
+      <Table dataSource={data} columns={columns} rowKey='id'/>
     </div>
   );
 }
